@@ -608,7 +608,7 @@ const Video = ({ user }) => {
           <div className="bg-zinc-950 w-full max-w-4xl aspect-video rounded-2xl shadow-2xl flex flex-col border border-yellow-500/20 overflow-hidden relative transform transition-all">
             
             <div className="absolute top-6 left-6 z-10 flex items-center gap-3">
-              <div className="w-12 h-12 bg-black/50 rounded-full border border-yellow-500/50 flex flex-col items-center justify-center shadow-lg backdrop-blur-sm p-1">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Branding Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; }}/>
               </div>
               <span className="text-white font-black text-lg tracking-wider drop-shadow-md hidden sm:block">Encore Ascend</span>
@@ -655,7 +655,7 @@ const Video = ({ user }) => {
             
             {/* Branding Logo overlay */}
             <div className="absolute top-6 left-6 z-10 flex items-center gap-3">
-              <div className="w-12 h-12 bg-black/50 rounded-full border border-yellow-500/50 flex flex-col items-center justify-center shadow-lg backdrop-blur-sm p-1">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Branding Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; }}/>
               </div>
               <span className="text-white font-black text-lg tracking-wider drop-shadow-md hidden sm:block">Encore Ascend</span>
