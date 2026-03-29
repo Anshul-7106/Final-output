@@ -1,5 +1,15 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import authService from '../services/authService';
+import { auth } from '../firebase';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  updateProfile as firebaseUpdateProfile,
+  updatePassword as firebaseUpdatePassword,
+  GoogleAuthProvider,
+  signInWithPopup
+} from 'firebase/auth';
 
 const AuthContext = createContext(null);
 
@@ -11,52 +21,50 @@ export const useAuth = () => {
   return context;
 };
 
+const ADMIN_EMAILS = [
+  "admin@gmail.com",
+  "sudha@gmail.com",
+  "sudhanshray10@gmail.com",
+  "vs5825982@gmail.com"
+];
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Check for existing session on mount
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const storedUser = authService.getStoredUser();
-        const token = authService.getToken();
-
-        if (storedUser && token) {
-          // Verify token is still valid
-          const response = await authService.getCurrentUser();
-          if (response.success) {
-            setUser(response.data.user);
-          } else {
-            // Token invalid, clear storage
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-          }
-        }
-      } catch (err) {
-        console.error('Auth init error:', err);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const role = ADMIN_EMAILS.includes(firebaseUser.email) ? 'admin' : 'user';
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName || 'User',
+          role: role,
+          photoURL: firebaseUser.photoURL,
+          firebaseUser
+        });
+        localStorage.setItem('token', firebaseUser.accessToken);
+        localStorage.setItem('user', JSON.stringify({ email: firebaseUser.email, role }));
+      } else {
+        setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-      } finally {
-        setLoading(false);
       }
-    };
+      setLoading(false);
+    });
 
-    initAuth();
+    return () => unsubscribe();
   }, []);
 
   const login = async (email, password) => {
     try {
       setError(null);
-      const response = await authService.login(email, password);
-      if (response.success) {
-        setUser(response.data.user);
-        return { success: true };
-      }
-      return { success: false, message: response.message };
+      await signInWithEmailAndPassword(auth, email, password);
+      return { success: true };
     } catch (err) {
-      const message = err.response?.data?.message || 'Login failed';
+      const message = err.message || 'Login failed';
       setError(message);
       return { success: false, message };
     }
@@ -65,23 +73,44 @@ export const AuthProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       setError(null);
-      const response = await authService.signup(userData);
-      if (response.success) {
-        setUser(response.data.user);
-        return { success: true };
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+      if (userData.name) {
+        await firebaseUpdateProfile(userCredential.user, { displayName: userData.name });
+        // Update local state early to reflect name change immediately 
+        const role = ADMIN_EMAILS.includes(userCredential.user.email) ? 'admin' : 'user';
+        setUser({
+          uid: userCredential.user.uid,
+          email: userCredential.user.email,
+          name: userData.name,
+          role: role,
+          photoURL: userCredential.user.photoURL,
+          firebaseUser: userCredential.user
+        });
       }
-      return { success: false, message: response.message };
+      return { success: true };
     } catch (err) {
-      const message = err.response?.data?.message || 'Signup failed';
+      const message = err.message || 'Signup failed';
       setError(message);
       return { success: false, message };
     }
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      setError(null);
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      return { success: true };
+    } catch (err) {
+      const message = err.message || 'Google Login failed';
+      setError(message);
+      return { success: false, message };
+    }
+  }
+
   const logout = async () => {
     try {
-      await authService.logout();
-      setUser(null);
+      await signOut(auth);
     } catch (err) {
       console.error('Logout error:', err);
     }
@@ -90,14 +119,14 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (userData) => {
     try {
       setError(null);
-      const response = await authService.updateProfile(userData);
-      if (response.success) {
-        setUser(response.data.user);
+      if (auth.currentUser && userData.name) {
+        await firebaseUpdateProfile(auth.currentUser, { displayName: userData.name });
+        setUser(prev => ({ ...prev, name: userData.name }));
         return { success: true };
       }
-      return { success: false, message: response.message };
+      return { success: false, message: 'No user to update' };
     } catch (err) {
-      const message = err.response?.data?.message || 'Profile update failed';
+      const message = err.message || 'Profile update failed';
       setError(message);
       return { success: false, message };
     }
@@ -106,10 +135,13 @@ export const AuthProvider = ({ children }) => {
   const updatePassword = async (currentPassword, newPassword) => {
     try {
       setError(null);
-      const response = await authService.updatePassword(currentPassword, newPassword);
-      return { success: response.success, message: response.message };
+      if (auth.currentUser) {
+        await firebaseUpdatePassword(auth.currentUser, newPassword);
+        return { success: true, message: 'Password updated' };
+      }
+      return { success: false, message: 'No authenticated user' };
     } catch (err) {
-      const message = err.response?.data?.message || 'Password update failed';
+      const message = err.message || 'Password update failed';
       setError(message);
       return { success: false, message };
     }
@@ -124,6 +156,7 @@ export const AuthProvider = ({ children }) => {
     isInstructor: user?.role === 'instructor' || user?.role === 'admin',
     login,
     signup,
+    loginWithGoogle,
     logout,
     updateProfile,
     updatePassword,
@@ -133,7 +166,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

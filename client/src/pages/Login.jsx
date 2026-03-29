@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, error: authError, setError } = useAuth();
+  const { login, loginWithGoogle, error: authError, setError } = useAuth();
 
   // Form states
   const [email, setEmail] = useState('');
@@ -70,8 +70,26 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    clearErrors();
+    try {
+      const result = await loginWithGoogle();
+      if (result.success) {
+        setSuccessMessage('Successfully logged in with Google!');
+        setTimeout(() => navigate('/dashboard'), 1000);
+      } else {
+        setGeneralError(result.message || 'Google Login failed. Please try again.');
+      }
+    } catch (err) {
+      setGeneralError('An unexpected error occurred with Google Login.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex w-full h-screen font-sans bg-gray-50/50">
+    <div className="flex w-full h-screen font-sans bg-gray-50/50 dark:bg-zinc-900 transition-colors duration-300">
 
       {/* Left side: branding/illustration (hidden on small screens) */}
       <div className="hidden lg:flex flex-col w-1/2 justify-center items-center bg-gradient-to-br from-black via-zinc-500 to-yellow-600 border-r border-yellow-600/20 overflow-hidden relative p-12 text-white">
@@ -96,7 +114,7 @@ export default function Login() {
       </div>
 
       {/* Right side: Login form */}
-      <div className="flex flex-col w-full lg:w-1/2 items-center justify-center p-6 sm:p-12 relative bg-white">
+      <div className="flex flex-col w-full lg:w-1/2 items-center justify-center p-6 sm:p-12 relative bg-white dark:bg-zinc-900 transition-colors duration-300">
         <div className="w-full max-w-md space-y-8">
 
           <div className="text-center mb-10">
@@ -121,10 +139,10 @@ export default function Login() {
           )}
 
           {/* Form container */}
-          <div className="bg-white">
+          <div className="bg-transparent">
             <form onSubmit={handleEmailLogin} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1 transition-colors duration-300">Email Address</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 transition-colors ${emailWarning ? 'text-orange-400' : 'text-gray-400 group-focus-within:text-yellow-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
@@ -132,8 +150,8 @@ export default function Login() {
                   <input
                     type="email"
                     placeholder="e.g., student@example.com"
-                    className={`block w-full pl-11 pr-4 py-3 border rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all
-                      ${emailWarning ? 'border-orange-300 focus:ring-orange-200 bg-orange-50/30' : 'border-gray-200 focus:border-yellow-500 focus:ring-yellow-500/30'}`}
+                    className={`block w-full pl-11 pr-4 py-3 border rounded-xl placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all dark:bg-zinc-800 dark:text-white
+                      ${emailWarning ? 'border-orange-300 focus:ring-orange-200 bg-orange-50/30 dark:border-orange-500/50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-zinc-700 focus:border-yellow-500 focus:ring-yellow-500/30'}`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     onBlur={handleEmailBlur}
@@ -146,7 +164,7 @@ export default function Login() {
 
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="block text-sm font-semibold text-gray-700">Password</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 transition-colors duration-300">Password</label>
                   <Link
                     to="/reset-password"
                     className="text-xs font-semibold text-yellow-600 hover:text-yellow-700 hover:underline focus:outline-none transition-colors"
@@ -161,8 +179,8 @@ export default function Login() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
-                    className={`block w-full pl-11 pr-12 py-3 border rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all
-                      ${passwordError ? 'border-red-300 focus:ring-red-200 bg-red-50/30' : 'border-gray-200 focus:border-yellow-500 focus:ring-yellow-500/30'}`}
+                    className={`block w-full pl-11 pr-12 py-3 border rounded-xl placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all dark:bg-zinc-800 dark:text-white
+                      ${passwordError ? 'border-red-300 focus:ring-red-200 bg-red-50/30 dark:border-red-500/50 dark:bg-red-900/20' : 'border-gray-200 dark:border-zinc-700 focus:border-yellow-500 focus:ring-yellow-500/30'}`}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -201,6 +219,29 @@ export default function Login() {
                 )}
               </button>
             </form>
+          </div>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300 dark:border-zinc-700 transition-colors duration-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white dark:bg-zinc-900 text-gray-500 dark:text-gray-400 font-medium transition-colors duration-300">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="w-full flex justify-center items-center gap-3 py-3 px-4 border border-gray-300 dark:border-zinc-700 rounded-xl shadow-sm bg-white dark:bg-zinc-800 text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-700 hover:shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo" className="w-5 h-5 flex-shrink-0" />
+                Sign in with Google
+              </button>
+            </div>
           </div>
 
           <div className="text-center mt-8">

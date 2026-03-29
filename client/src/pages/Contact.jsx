@@ -51,7 +51,7 @@ const Contact = ({ user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 text-gray-900 dark:text-white font-sans overflow-x-hidden transition-colors duration-300">
       {/* Header */}
       <Navbar user={user} isAdmin={isAdmin} onLogout={handleLogout} />
 
@@ -63,9 +63,9 @@ const Contact = ({ user }) => {
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-center tracking-tight">
             Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600">Touch</span>
           </h1>
-          <p className="text-center text-zinc-400 mb-10 font-medium">Have questions about our resources? We're here to help.</p>
+          <p className="text-center text-gray-600 dark:text-zinc-400 mb-10 font-medium transition-colors duration-300">Have questions about our resources? We're here to help.</p>
 
-          <div className="bg-zinc-800 border border-zinc-700 p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+          <div className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-8 rounded-3xl shadow-2xl relative overflow-hidden transition-colors duration-300">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
             
             {submitted ? (
@@ -73,35 +73,35 @@ const Contact = ({ user }) => {
                 <div className="w-16 h-16 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
-                <p className="text-zinc-400">We'll get back to you as soon as possible.</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Message Sent!</h3>
+                <p className="text-gray-500 dark:text-zinc-400 transition-colors duration-300">We'll get back to you as soon as possible.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 <div>
-                  <label className="block text-sm font-bold text-zinc-300 mb-2">Your Name</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-zinc-300 mb-2 transition-colors duration-300">Your Name</label>
                   <input 
                     type="text" required
                     value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-                    className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors"
+                    className="w-full bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors duration-300"
                     placeholder="John Doe"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-zinc-300 mb-2">Email Address</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-zinc-300 mb-2 transition-colors duration-300">Email Address</label>
                   <input 
                     type="email" required
                     value={form.email} onChange={e => setForm({...form, email: e.target.value})}
-                    className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors"
+                    className="w-full bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors duration-300"
                     placeholder="john@example.com"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-zinc-300 mb-2">Your Message</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-zinc-300 mb-2 transition-colors duration-300">Your Message</label>
                   <textarea 
                     required rows="4"
                     value={form.message} onChange={e => setForm({...form, message: e.target.value})}
-                    className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors resize-none"
+                    className="w-full bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors duration-300 resize-none"
                     placeholder="How can we help you?"
                   ></textarea>
                 </div>
@@ -114,8 +114,8 @@ const Contact = ({ user }) => {
         </div>
       </div>
       
-      <footer className="bg-zinc-900 border-t border-yellow-500/20 py-8 text-center mt-12 w-full">
-        <p className="text-zinc-600 text-sm font-medium">© {new Date().getFullYear()} Encore Ascend. All rights reserved.</p>
+      <footer className="bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 py-8 text-center mt-12 w-full transition-colors duration-300">
+        <p className="text-gray-500 dark:text-zinc-600 text-sm font-medium transition-colors duration-300">© {new Date().getFullYear()} Encore Ascend. All rights reserved.</p>
       </footer>
     </div>
   );

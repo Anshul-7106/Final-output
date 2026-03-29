@@ -66,8 +66,34 @@ const Notes = ({ user }) => {
       fetch(`/api/notes${noteQuery}`).then(res => res.json())
     ])
     .then(([foldersData, notesData]) => {
-      setFolders(Array.isArray(foldersData) && !foldersData.error ? foldersData : []);
-      setNotes(Array.isArray(notesData) && !notesData.error ? notesData : []);
+      let finalFolders = Array.isArray(foldersData) && !foldersData.error ? foldersData : [];
+      let finalNotes = Array.isArray(notesData) && !notesData.error ? notesData : [];
+
+      // Add dummy UPSC folder if at root
+      const dummyFolderId = "upsc-dummy-9999";
+      if (!currentFolderId) {
+        if (!finalFolders.find(f => f.id === dummyFolderId)) {
+          finalFolders.push({ id: dummyFolderId, name: "UPSC (General knowledge)", parent_id: null });
+        }
+      }
+
+      // Add dummy UPSC note if inside the dummy folder or if notes list is being populated
+      if (currentFolderId === dummyFolderId) {
+        if (!finalNotes.find(n => n.id === "upsc-note-9999")) {
+          finalNotes.push({
+            id: "upsc-note-9999",
+            title: "UPSC General Knowledge - Module 1",
+            description: "A comprehensive introductory guide to Indian Polity, Modern History, and current affairs. Essential for Prelims.",
+            file_url: "/GK.pdf",
+            youtube_url: "https://www.youtube.com/watch?v=LXb3EKWsInQ",
+            category: "UPSC",
+            folder_id: dummyFolderId
+          });
+        }
+      }
+
+      setFolders(finalFolders);
+      setNotes(finalNotes);
       setLoading(false);
     })
     .catch(err => {
@@ -94,8 +120,8 @@ const Notes = ({ user }) => {
     console.log("Analytics: PDF Read Tracked for URL:", note.file_url);
     setPendingPdfUrl(note.file_url);
     
-    const videoId = extractYouTubeId(note.youtube_url) || "LXb3EKWsInQ";
-    setActiveVideoUrl(`https://www.youtube.com/embed/${videoId}`);
+    // Play a generic fake ad (Grammarly/Skillshare type dummy) or a 10s countdown video
+    setActiveVideoUrl(`https://www.youtube.com/embed/LXb3EKWsInQ`);
     
     setVideoCountdown(10);
     setCanSkipVideo(false);
@@ -288,7 +314,7 @@ const Notes = ({ user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 font-sans pb-16 transition-colors duration-300">
       {/* Navigation Bar */}
       <Navbar 
         user={user} 
@@ -296,12 +322,12 @@ const Notes = ({ user }) => {
         onLogout={handleLogout} 
         searchBar={
           <div className="relative ml-4" ref={searchContainerRef}>
-            <div className="flex items-center bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 focus-within:border-yellow-500/50 focus-within:ring-1 focus-within:ring-yellow-500/30 transition-all">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-zinc-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <div className="flex items-center bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-full px-4 py-1.5 focus-within:border-yellow-500/50 focus-within:ring-1 focus-within:ring-yellow-500/30 transition-all shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 dark:text-zinc-500 mr-2 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               <input 
                 type="text" 
                 placeholder="Search resources, folders..." 
-                className="bg-transparent text-sm w-48 lg:w-64 text-zinc-200 placeholder-zinc-600 focus:outline-none"
+                className="bg-transparent text-sm w-48 lg:w-64 text-gray-900 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none transition-colors duration-300"
                 value={searchQuery}
                 // Clear the results if input is emptied
                 onChange={(e) => {
@@ -334,12 +360,12 @@ const Notes = ({ user }) => {
 
             {/* Dropdown Suggestions */}
             {searchQuery.trim().length > 0 && (searchResults.folders.length > 0 || searchResults.notes.length > 0) && (
-              <div className="absolute top-full left-0 mt-2 w-full min-w-[300px] bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden z-[100] max-h-96 overflow-y-auto">
+              <div className="absolute top-full left-0 mt-2 w-full min-w-[300px] bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden z-[100] max-h-96 overflow-y-auto transition-colors duration-300">
                 
                 {/* Folder Results */}
                 {searchResults.folders.length > 0 && (
                   <div className="py-2">
-                    <div className="px-4 py-1 text-xs font-bold text-zinc-500 uppercase tracking-wider">Folders</div>
+                    <div className="px-4 py-1 text-xs font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-wider transition-colors duration-300">Folders</div>
                     {searchResults.folders.map(f => (
                       <button 
                         key={`search-folder-${f.id}`} 
@@ -348,12 +374,12 @@ const Notes = ({ user }) => {
                           setFolderHistory([{ id: f.id, name: f.name }]); // Reset history to jump directly to this folder
                           setCurrentFolderId(f.id);
                         }}
-                        className="w-full text-left px-4 py-2 hover:bg-zinc-800 flex items-center gap-3 transition-colors"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-zinc-800 flex items-center gap-3 transition-colors"
                       >
-                        <div className="p-1.5 bg-yellow-500/10 text-yellow-500 rounded-md">
+                        <div className="p-1.5 bg-yellow-500/10 text-yellow-600 dark:text-yellow-500 rounded-md">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
                         </div>
-                        <span className="text-sm font-medium text-white line-clamp-1">{f.name}</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1 transition-colors duration-300">{f.name}</span>
                       </button>
                     ))}
                   </div>
@@ -361,8 +387,8 @@ const Notes = ({ user }) => {
 
                 {/* Notes Results */}
                 {searchResults.notes.length > 0 && (
-                  <div className="py-2 border-t border-zinc-800">
-                    <div className="px-4 py-1 text-xs font-bold text-zinc-500 uppercase tracking-wider">Resources</div>
+                  <div className="py-2 border-t border-gray-100 dark:border-zinc-800 transition-colors duration-300">
+                    <div className="px-4 py-1 text-xs font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-wider transition-colors duration-300">Resources</div>
                     {searchResults.notes.map(n => (
                       <button 
                         key={`search-note-${n.id}`} 
@@ -370,14 +396,14 @@ const Notes = ({ user }) => {
                           setSearchQuery('');
                           handleReadClick(n);
                         }}
-                        className="w-full text-left px-4 py-2 hover:bg-zinc-800 flex items-start gap-3 transition-colors"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-zinc-800 flex items-start gap-3 transition-colors"
                       >
-                        <div className="p-1.5 bg-white/5 text-zinc-400 border border-zinc-700 rounded-md mt-0.5">
+                        <div className="p-1.5 bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700 rounded-md mt-0.5 transition-colors duration-300">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                         </div>
                         <div>
-                          <span className="text-sm font-medium text-white line-clamp-1 leading-tight">{n.title}</span>
-                          {n.description && <span className="text-xs text-zinc-500 line-clamp-1 mt-0.5">{n.description}</span>}
+                          <span className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1 leading-tight transition-colors duration-300">{n.title}</span>
+                          {n.description && <span className="text-xs text-gray-500 dark:text-zinc-500 line-clamp-1 mt-0.5 transition-colors duration-300">{n.description}</span>}
                         </div>
                       </button>
                     ))}
@@ -391,17 +417,17 @@ const Notes = ({ user }) => {
       />
 
       {/* Hero Section */}
-      <div className="bg-[#FAF9F6] py-16 md:py-24 relative overflow-hidden text-left border-b border-gray-100">
+      <div className="bg-[#FAF9F6] dark:bg-zinc-950 py-16 md:py-24 relative overflow-hidden text-left border-b border-gray-100 dark:border-zinc-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
           <div className="max-w-3xl">
             <h4 className="text-yellow-600 font-bold tracking-widest text-sm mb-4 uppercase flex items-center gap-2">
               <span className="w-8 h-px bg-yellow-600"></span> STUDY NOTES
             </h4>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight text-gray-900 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight text-gray-900 dark:text-white leading-tight transition-colors duration-300">
               Curated Notes,<br/>
               <span className="text-yellow-500">Unlocked by Learning</span>
             </h1>
-            <p className="text-gray-500 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
+            <p className="text-gray-500 dark:text-zinc-400 text-lg md:text-xl font-medium max-w-2xl leading-relaxed transition-colors duration-300">
               Watch a short video, then unlock premium notes — knowledge earned is knowledge retained.
             </p>
           </div>
@@ -445,7 +471,7 @@ const Notes = ({ user }) => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
               </button>
             )}
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3 transition-colors duration-300">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
               Resources & Folders
             </h2>
@@ -508,7 +534,7 @@ const Notes = ({ user }) => {
                 <div className="absolute inset-0 bg-white border border-gray-100 rounded-[2rem] translate-x-1 translate-y-1 group-hover:translate-x-1.5 group-hover:translate-y-1.5 transition-transform duration-500 shadow-sm border-b-2 border-r-2 border-gray-200/50"></div>
                 
                 {/* Main Card */}
-                <div className="relative bg-[#ffffff] border border-gray-100 group-hover:border-yellow-300 rounded-[2rem] p-6 shadow-sm group-hover:shadow-[0_8px_30px_rgba(234,179,8,0.12)] transition-all duration-300 overflow-hidden flex flex-col h-full min-h-[160px]">
+                <div className="relative bg-[#ffffff] dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 group-hover:border-yellow-300 dark:group-hover:border-yellow-500 rounded-[2rem] p-6 shadow-sm group-hover:shadow-[0_8px_30px_rgba(234,179,8,0.12)] transition-all duration-300 overflow-hidden flex flex-col h-full min-h-[160px]">
                   {/* Subtle Glow */}
                   <div className="absolute -right-6 -top-6 w-24 h-24 bg-yellow-400 opacity-0 rounded-full blur-2xl group-hover:opacity-20 transition-opacity duration-700"></div>
 
@@ -524,7 +550,7 @@ const Notes = ({ user }) => {
                   </div>
 
                   <div className="mt-auto">
-                    <h3 className="text-[19px] font-black text-gray-900 group-hover:text-yellow-600 transition-colors line-clamp-1 mb-1">{folder.name}</h3>
+                    <h3 className="text-[19px] font-black text-gray-900 dark:text-white group-hover:text-yellow-600 transition-colors line-clamp-1 mb-1">{folder.name}</h3>
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
                       Open Collection
@@ -559,7 +585,7 @@ const Notes = ({ user }) => {
                 <div
                   key={`note-${note.id}`}
                   onClick={() => handleReadClick(note)}
-                  className="group bg-white rounded-[2rem] shadow-[0_2px_15px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100 hover:border-yellow-200 overflow-hidden flex flex-col transition-all duration-500 transform hover:-translate-y-2 relative cursor-pointer p-7"
+                  className="group bg-white dark:bg-zinc-800 rounded-[2rem] shadow-[0_2px_15px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100 dark:border-zinc-700 hover:border-yellow-200 dark:hover:border-yellow-500/50 overflow-hidden flex flex-col transition-all duration-500 transform hover:-translate-y-2 relative cursor-pointer p-7"
                 >
                   <div className="flex justify-between items-start mb-8">
                     {/* Unique Book Icon */}
@@ -581,10 +607,10 @@ const Notes = ({ user }) => {
                     </div>
                   </div>
 
-                  <h3 className="font-black text-gray-900 mb-2.5 text-[18px] leading-tight group-hover:text-yellow-600 transition-colors line-clamp-2">{note.title}</h3>
-                  <p className="text-[13px] leading-relaxed text-gray-500 font-medium line-clamp-2 min-h-[40px] mb-8">{note.description}</p>
+                  <h3 className="font-black text-gray-900 dark:text-white mb-2.5 text-[18px] leading-tight group-hover:text-yellow-600 transition-colors line-clamp-2">{note.title}</h3>
+                  <p className="text-[13px] leading-relaxed text-gray-500 dark:text-zinc-400 font-medium line-clamp-2 min-h-[40px] mb-8 transition-colors duration-300">{note.description}</p>
                   
-                  <div className="mt-auto pt-6 border-t border-gray-50 flex justify-between items-center">
+                  <div className="mt-auto pt-6 border-t border-gray-50 dark:border-zinc-700/50 flex justify-between items-center transition-colors duration-300">
                     <span className="text-[11px] font-black text-yellow-600 tracking-[0.1em] uppercase">{note.category || "GENERAL"}</span>
                     <div className="flex items-center text-[11px] font-bold text-gray-400 uppercase tracking-widest gap-2 group-hover:text-yellow-600 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -641,15 +667,16 @@ const Notes = ({ user }) => {
               {canSkipVideo ? (
                 <button 
                   onClick={handleSkipVideo}
-                  className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-3 rounded-full font-bold shadow-xl transition-all flex items-center gap-2 hover:scale-105 active:scale-95 border border-yellow-300"
+                  className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-3 rounded-full font-bold shadow-xl transition-all flex items-center gap-2 hover:scale-105 active:scale-95 border border-yellow-300 z-50 pointer-events-auto"
                 >
-                  Skip Video
+                  Skip Ad
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                 </button>
               ) : (
-                <div className="bg-black/80 backdrop-blur-sm text-gray-300 px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-3 border border-gray-600/50">
+                <div className="bg-black/80 backdrop-blur-sm text-gray-300 px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-3 border border-gray-600/50 pointer-events-none">
+                  <span className="text-yellow-500 text-sm tracking-widest uppercasemr-2">Advertisement</span>
                   <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                  Skip in {videoCountdown}s
+                  Skip Ad in {videoCountdown}s
                 </div>
               )}
             </div>
