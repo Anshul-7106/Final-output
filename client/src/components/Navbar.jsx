@@ -19,7 +19,7 @@ const Navbar = ({ user, isAdmin, onLogout, searchBar }) => {
           
           <div className="flex items-center gap-4 lg:gap-6 xl:gap-10">
             <Link to="/" className="flex items-center gap-4">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-black/50 rounded-full border border-yellow-500/50 flex items-center justify-center p-1.5 shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:scale-105 transition-transform duration-300">
+              <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center hover:scale-105 transition-transform duration-300">
                 <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="max-w-full max-h-full object-contain" onError={(e) => { e.target.style.display='none'; }}/>
               </div>
               <div className="hidden sm:block">
