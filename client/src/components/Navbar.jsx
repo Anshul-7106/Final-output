@@ -13,7 +13,7 @@ const Navbar = ({ user, isAdmin, onLogout, searchBar }) => {
   }, []);
 
   return (
-    <nav className="bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-yellow-500/20 sticky top-0 z-40 shadow-md transition-colors duration-300">
+    <nav>
       <div className="max-w-[1600px] w-full mx-auto px-4 md:px-8 lg:px-12">
         <div className="flex justify-between items-center h-24">
           

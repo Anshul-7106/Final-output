@@ -14,7 +14,7 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div >
       <Navbar user={user} isAdmin={isAdmin} onLogout={handleLogout} />
       
       {/* Hero Section */}
