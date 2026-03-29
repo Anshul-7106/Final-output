@@ -34,7 +34,7 @@ export default function Home() {
           >
             <div className="w-48 h-48 md:w-56 md:h-56 bg-black/40 rounded-[2.5rem] border border-yellow-500/30 flex items-center justify-center shadow-[0_0_50px_rgba(234,179,8,0.2)] relative overflow-hidden backdrop-blur-xl group">
               <div className="absolute inset-0 bg-gradient-to-tr from-yellow-500/10 to-transparent group-hover:from-yellow-500/20 transition-all duration-500"></div>
-              <img src="/logo.png" alt="Encore Ascend Logo" className="w-36 h-36 md:w-44 md:h-44 object-contain relative z-10 drop-shadow-[0_0_20px_rgba(234,179,8,0.5)] transition-transform duration-500 group-hover:scale-105" onError={(e) => { e.target.style.display='none'; }} />
+              <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Encore Ascend Logo" className="w-36 h-36 md:w-44 md:h-44 object-contain relative z-10 drop-shadow-[0_0_20px_rgba(234,179,8,0.5)] transition-transform duration-500 group-hover:scale-105" onError={(e) => { e.target.style.display='none'; }} />
             </div>
           </motion.div>
 
@@ -153,7 +153,7 @@ export default function Home() {
                     className="z-10 bg-white dark:bg-zinc-800 p-8 rounded-[2rem] shadow-[0_20px_40px_rgba(234,179,8,0.1)] border border-yellow-500/20 flex items-center justify-center relative overflow-hidden transition-colors duration-300"
                   >
                     <div className="absolute inset-0 bg-yellow-500 opacity-5"></div>
-                    <img src="/logo.png" alt="EA Logo" className="w-32 h-32 object-contain relative z-10 drop-shadow-[0_0_15px_rgba(234,179,8,0.3)]" onError={(e) => { e.target.style.display='none'; }} />
+                    <img src={`${import.meta.env.BASE_URL}logo.png`} alt="EA Logo" className="w-32 h-32 object-contain relative z-10 drop-shadow-[0_0_15px_rgba(234,179,8,0.3)]" onError={(e) => { e.target.style.display='none'; }} />
                   </motion.div>
                   
                   <motion.div 
@@ -214,7 +214,7 @@ export default function Home() {
       <footer className="bg-gray-50 dark:bg-zinc-900 border-t border-yellow-500/20 py-12 mt-auto transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center">
           <div className="flex items-center gap-3 mb-4">
-             <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain drop-shadow-[0_0_10px_rgba(234,179,8,0.4)]" onError={(e) => { e.target.style.display='none'; }} />
+             <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="w-8 h-8 object-contain drop-shadow-[0_0_10px_rgba(234,179,8,0.4)]" onError={(e) => { e.target.style.display='none'; }} />
              <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600">Encore Ascend</span>
           </div>
           <p className="text-zinc-500 font-medium">© {new Date().getFullYear()} Encore Ascend. Education evolved.</p>

@@ -643,7 +643,7 @@ const Notes = ({ user }) => {
             {/* Branding Logo overlay */}
             <div className="absolute top-6 left-6 z-10 flex items-center gap-3">
               <div className="w-12 h-12 bg-black/50 rounded-full border border-yellow-500/50 flex flex-col items-center justify-center shadow-lg backdrop-blur-sm p-1">
-                <img src="/logo.png" alt="Branding Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; }}/>
+                <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Branding Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; }}/>
               </div>
               <span className="text-white font-black text-lg tracking-wider drop-shadow-md hidden sm:block">Encore Ascend</span>
             </div>

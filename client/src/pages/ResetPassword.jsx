@@ -111,7 +111,7 @@ export default function ResetPassword() {
         
         <div className="z-10 max-w-md text-center">
           <div className="mb-6 w-64 h-64 lg:w-72 lg:h-72 mx-auto flex items-center justify-center p-2 transition-transform hover:scale-105 duration-500">
-            <img src="/logo.png" alt="EA Encore Ascend Logo" className="max-w-full max-h-full object-contain drop-shadow-[0_0_20px_rgba(234,179,8,0.4)]" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }} />
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="EA Encore Ascend Logo" className="max-w-full max-h-full object-contain drop-shadow-[0_0_20px_rgba(234,179,8,0.4)]" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }} />
             <div className="hidden text-center w-full">
               <span className="block text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 tracking-wider drop-shadow-xl leading-none">EA</span>
               <span className="block text-lg font-bold text-yellow-500 tracking-widest mt-3 uppercase">Encore Ascend</span>

@@ -175,7 +175,7 @@ const AboutUs = ({ user }) => {
       {/* Footer */}
       <footer className="bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 py-12 text-center relative z-10 transition-colors duration-300">
         <div className="flex items-center justify-center gap-3 mb-4 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-          <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-full" onError={(e) => e.target.style.display='none'}/>
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="w-8 h-8 rounded-full" onError={(e) => e.target.style.display='none'}/>
           <span className="font-extrabold text-xl tracking-tight">Encore Ascend</span>
         </div>
         <p className="text-gray-500 dark:text-zinc-600 text-sm font-medium transition-colors duration-300">© {new Date().getFullYear()} Encore Ascend. All rights reserved.</p>

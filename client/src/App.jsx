@@ -128,7 +128,7 @@ const AppRoutes = () => {
 const App = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/Final-output">
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>
